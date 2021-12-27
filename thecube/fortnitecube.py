@@ -28,6 +28,9 @@ def get_lifetime_wins():
     # with open("response.txt", "w") as f:
     #     f.write(response.text)
     
+    if response.status_code != 200:
+        raise FortniteAPIError("HTTP Status {}".format(response.status_code))
+
     # check its a valid json response
     try:
         response.json()
