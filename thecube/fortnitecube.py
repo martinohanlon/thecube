@@ -22,8 +22,12 @@ def get_lifetime_wins():
 
     response = requests.get(url, headers=header)
 
-    print(response)
-
+    # debug
+    # print(response)
+    # print(response.headers)
+    # with open("response.txt", "w") as f:
+    #     f.write(response.text)
+    
     # check its a valid json response
     try:
         response.json()
@@ -36,7 +40,9 @@ def get_lifetime_wins():
 
     # get the stats
     life_time_stats = response.json()["lifeTimeStats"]
-    print(life_time_stats)
+
+    # debug
+    # print(life_time_stats)
 
     response.close()
 
@@ -87,7 +93,7 @@ def run_cube(prev_life_time_wins):
     print("Fortnite started")
     on()
 
-    next_check = time() + REFRESH_TIME_SECS
+    next_check = time() + FNT_REFRESH_TIME_SECS
 
     while switch.is_pressed:
     # debug with button
@@ -97,6 +103,8 @@ def run_cube(prev_life_time_wins):
         if time() > next_check:
             
             life_time_wins = get_lifetime_wins()
+
+            # debug
             print(life_time_wins)
 
             # check a win                
