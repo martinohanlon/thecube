@@ -155,6 +155,7 @@ def run_cube():
 
 switch = Button(17)
 blinkt.set_clear_on_exit()
+
 running = True
 
 print("Service running")
