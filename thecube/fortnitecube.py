@@ -7,11 +7,14 @@ import sys
 from constants import *
 
 FNT_URL = "https://api.fortnitetracker.com/v1/profile/{}/{}"
-FNT_REFRESH_TIME_SECS = 60
+FNT_REFRESH_TIME_SECS = 30
 # debug shorter refresh
-FNT_REFRESH_TIME_SECS = 10
+# FNT_REFRESH_TIME_SECS = 10
 
 class FortniteAPIError(Exception):
+    pass
+
+class FortniteResponseError(Exception):
     pass
 
 def get_lifetime_wins():
@@ -29,7 +32,7 @@ def get_lifetime_wins():
     #     f.write(response.text)
     
     if response.status_code != 200:
-        raise FortniteAPIError("HTTP Status {}".format(response.status_code))
+        raise FortniteResponseError("HTTP Status {}".format(response.status_code))
 
     # check its a valid json response
     try:
@@ -84,16 +87,24 @@ def crazy_lights(min_leds, max_leds, r1, r2, g1, g2, b1, b2, length, delay):
         pixels = random.sample(range(blinkt.NUM_PIXELS), random.randint(min_leds, max_leds))
         for pixel in range(blinkt.NUM_PIXELS):
 
+            r, g, b = random.randint(r1,r2), random.randint(g1,g2), random.randint(b1,b2)
+
             if pixel in pixels:
-                blinkt.set_pixel(pixel, random.randint(r1,r2), random.randint(g1,g2), random.randint(b1,b2))
+                # blinkt.set_pixel(pixel, random.randint(r1,r2), random.randint(g1,g2), random.randint(b1,b2))
+                blinkt.set_pixel(pixel, r, g, b)
             else:
                 blinkt.set_pixel(pixel, 0, 0, 0)
 
         blinkt.show()
         sleep(delay)
 
-def run_cube(prev_life_time_wins):
-    print("Fortnite started")
+def run_cube():    
+    # check connection
+    on(0, 255, 0)
+    prev_life_time_wins = get_lifetime_wins()
+    flash(0, 255, 0, 3, 0.25)
+    
+    # start
     on()
 
     next_check = time() + FNT_REFRESH_TIME_SECS
@@ -108,27 +119,27 @@ def run_cube(prev_life_time_wins):
             life_time_wins = get_lifetime_wins()
 
             # debug
-            print(life_time_wins)
+            # print(life_time_wins)
 
             # check a win                
             if life_time_wins["Wins"] > prev_life_time_wins["Wins"]:
-                crazy_lights(1, 8, 0, 255, 0, 255, 0, 255, 60, 0.05)
+                crazy_lights(5, 8, 0, 255, 0, 255, 0, 255, 10, 0.1)
                 print("Wins")
                 on()
 
             # check a high position
             elif life_time_wins["Top 3s"] > prev_life_time_wins["Top 3s"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 30, 0.2)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
                 print("Top 3s")
                 on()
                 
             elif life_time_wins["Top 10"] > prev_life_time_wins["Top 10"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 30, 0.2)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
                 print("Top 10")
                 on()
                 
             elif life_time_wins["Top 5s"] > prev_life_time_wins["Top 5s"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 30, 0.2)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
                 print("Top 5s")
                 on()
 
@@ -144,7 +155,6 @@ def run_cube(prev_life_time_wins):
 
 switch = Button(17)
 blinkt.set_clear_on_exit()
-
 running = True
 
 print("Service running")
@@ -155,13 +165,16 @@ while running:
         # debug with button
         # switch.wait_for_release()
 
-        on(0, 255, 0)
-        prev_life_time_wins = get_lifetime_wins()
-        flash(0, 255, 0, 3, 0.25)
-        run_cube(prev_life_time_wins)
+        print("Fortnite started")
+        run_cube()
 
+    except FortniteResponseError as err:
+        print("Fortnite Response Error: {}".format(err))
+        flash(255, 0, 255, 3, 0.25)
+        run_cube()
+        
     except FortniteAPIError as err:
-        print("Fortnite API Error: {}".format(err))
+        print("Stopping - Fortnite API Error: {}".format(err))
         flash(255, 0, 255, 3, 0.25)
         on(255, 0, 255)
         switch.wait_for_release()
@@ -173,7 +186,7 @@ while running:
         running = False
 
     except:
-        print("Unexpected error:", sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+        print("Stopping - Unexpected error:", sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         flash(255, 0, 0, 3, 0.25)
         on(255,0,0)
         switch.wait_for_release()
