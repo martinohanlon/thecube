@@ -123,23 +123,23 @@ def run_cube():
 
             # check a win                
             if life_time_wins["Wins"] > prev_life_time_wins["Wins"]:
-                crazy_lights(5, 8, 0, 255, 0, 255, 0, 255, 10, 0.1)
+                crazy_lights(5, 8, 0, 255, 0, 255, 0, 255, 60, 0.1)
                 print("Wins")
                 on()
 
             # check a high position
             elif life_time_wins["Top 3s"] > prev_life_time_wins["Top 3s"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 45, 0.4)
                 print("Top 3s")
                 on()
                 
             elif life_time_wins["Top 10"] > prev_life_time_wins["Top 10"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 45, 0.4)
                 print("Top 10")
                 on()
                 
             elif life_time_wins["Top 5s"] > prev_life_time_wins["Top 5s"]:
-                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 10, 0.4)
+                crazy_lights(1, 5, 0, 255, 0, 255, 0, 255, 45, 0.4)
                 print("Top 5s")
                 on()
 
