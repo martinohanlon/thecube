@@ -157,22 +157,26 @@ switch = Button(17)
 blinkt.set_clear_on_exit()
 
 running = True
+restart_after_error = False
 
 print("Service running")
 while running:
 
     try:
-        switch.wait_for_press()
-        # debug with button
-        # switch.wait_for_release()
+        if restart_after_error:
+            restart_after_error = False
+        else:
+            switch.wait_for_press()
+            # debug with button
+            # switch.wait_for_release()
 
         print("Fortnite started")
         run_cube()
 
     except FortniteResponseError as err:
         print("Fortnite Response Error: {}".format(err))
-        flash(255, 0, 255, 3, 0.25)
-        run_cube()
+        flash(0, 0, 255, 3, 0.25)
+        restart_after_error = True
         
     except FortniteAPIError as err:
         print("Stopping - Fortnite API Error: {}".format(err))
